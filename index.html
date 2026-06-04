@@ -20,12 +20,15 @@
         .design-option:hover { transform: scale(1.03); }
         .selected { border: 3px solid #1e40af; background-color: #f0f9ff; }
         
-        .lightbox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow: hidden; }
+        .lightbox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow: hidden; touch-action: none; }
         .lightbox-content { display: flex; flex-direction: column; height: 100%; padding: 60px 15px 15px; box-sizing: border-box; gap: 15px; }
-        .lightbox-main { flex: 0 0 70%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; padding: 5px; }
+        .lightbox-main { flex: 0 0 70%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; padding: 5px; overflow: hidden; }
         .lightbox-title { color: white; font-size: 14px; margin-bottom: 10px; text-align: center; flex-shrink: 0; }
-        .lightbox-image-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; max-height: calc(100% - 30px); }
-        .lightbox-image { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 8px; object-fit: contain; touch-action: manipulation; }
+        .lightbox-image-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; max-height: calc(100% - 30px); overflow: hidden; position: relative; }
+        .lightbox-image-wrapper { position: relative; touch-action: pan-x pan-y pinch-zoom; cursor: grab; }
+        .lightbox-image-wrapper:active { cursor: grabbing; }
+        .lightbox-image { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 8px; object-fit: contain; transition: transform 0.1s ease-out; }
+        .lightbox-image.scaled { max-width: none; max-height: none; }
         .lightbox-close { position: absolute; top: 12px; right: 12px; color: white; font-size: 24px; cursor: pointer; z-index: 10; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
         .lightbox-prev, .lightbox-next { position: absolute; top: 35%; transform: translateY(-50%); color: white; font-size: 28px; cursor: pointer; z-index: 10; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
         .lightbox-prev { left: 10px; }
@@ -37,6 +40,9 @@
         .image-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 2px; }
         .image-thumbnail { flex-shrink: 0; width: 60px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.5; transition: all 0.3s; border: 2px solid transparent; }
         .image-thumbnail:hover, .image-thumbnail.active { opacity: 1; border-color: #1e40af; }
+        .lightbox-zoom-info { position: absolute; bottom: 40%; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; font-size: 14px; display: none; z-index: 10; }
+        .lightbox-fullscreen { position: absolute; top: 12px; right: 55px; color: white; font-size: 24px; cursor: pointer; z-index: 10; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .lightbox-reset { position: absolute; top: 12px; right: 95px; color: white; font-size: 20px; cursor: pointer; z-index: 10; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
         
         @media (min-width: 768px) {
             .lightbox-content { padding: 80px 30px 30px; gap: 25px; }
@@ -311,13 +317,18 @@
     <!-- 图片画廊弹窗 -->
     <div class="lightbox-overlay" id="lightbox">
         <span class="lightbox-close" onclick="closeLightbox()">×</span>
+        <span class="lightbox-reset" onclick="resetImage()" title="重置缩放">⟲</span>
+        <span class="lightbox-fullscreen" onclick="toggleFullscreen()" title="全屏">⛶</span>
         <span class="lightbox-prev" onclick="prevImage()">‹</span>
         <span class="lightbox-next" onclick="nextImage()">›</span>
+        <div class="lightbox-zoom-info" id="lightbox-zoom-info">100%</div>
         <div class="lightbox-content">
             <div class="lightbox-main">
                 <div class="lightbox-title" id="lightbox-title"></div>
-                <div class="lightbox-image-container">
-                    <img class="lightbox-image" id="lightbox-image" src="" alt="">
+                <div class="lightbox-image-container" id="lightbox-image-container">
+                    <div class="lightbox-image-wrapper" id="lightbox-image-wrapper">
+                        <img class="lightbox-image" id="lightbox-image" src="" alt="">
+                    </div>
                 </div>
             </div>
             <div class="lightbox-preview">
@@ -379,6 +390,17 @@
         let currentLightboxIndex = 0;
         let currentDesignImages = [];
         let currentDesignTitle = "";
+        
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let lastTouchDistance = 0;
+        let lastTouchCenterX = 0;
+        let lastTouchCenterY = 0;
+        let isPinching = false;
 
         function renderDesigns() {
             const container = document.getElementById('design-grid');
@@ -406,6 +428,8 @@
             currentDesignTitle = design.title;
             currentLightboxIndex = 0;
             
+            resetImage();
+            
             document.getElementById('lightbox-title').textContent = currentDesignTitle;
             document.getElementById('lightbox-image').src = currentDesignImages[currentLightboxIndex];
             
@@ -425,6 +449,7 @@
 
         function selectImage(index) {
             currentLightboxIndex = index;
+            resetImage();
             document.getElementById('lightbox-image').src = currentDesignImages[currentLightboxIndex];
             
             document.querySelectorAll('.image-thumbnail').forEach((el, idx) => {
@@ -440,6 +465,145 @@
         function nextImage() {
             currentLightboxIndex = (currentLightboxIndex + 1) % currentDesignImages.length;
             selectImage(currentLightboxIndex);
+        }
+
+        function resetImage() {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateImageTransform();
+            document.getElementById('lightbox-zoom-info').style.display = 'none';
+        }
+
+        function updateImageTransform() {
+            const wrapper = document.getElementById('lightbox-image-wrapper');
+            const image = document.getElementById('lightbox-image');
+            if (scale > 1) {
+                image.classList.add('scaled');
+                wrapper.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            } else {
+                image.classList.remove('scaled');
+                wrapper.style.transform = 'none';
+            }
+            updateZoomInfo();
+        }
+
+        function updateZoomInfo() {
+            const info = document.getElementById('lightbox-zoom-info');
+            if (scale > 1) {
+                info.textContent = Math.round(scale * 100) + '%';
+                info.style.display = 'block';
+            } else {
+                info.style.display = 'none';
+            }
+        }
+
+        function zoomIn() {
+            if (scale < 4) {
+                scale += 0.25;
+                updateImageTransform();
+            }
+        }
+
+        function zoomOut() {
+            if (scale > 1) {
+                scale -= 0.25;
+                if (scale < 1) scale = 1;
+                updateImageTransform();
+            }
+        }
+
+        function handleTouchStart(e) {
+            const touches = e.touches;
+            if (touches.length === 1) {
+                isDragging = true;
+                lastTouchX = touches[0].clientX;
+                lastTouchY = touches[0].clientY;
+            } else if (touches.length === 2) {
+                isPinching = true;
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+                lastTouchCenterX = (touches[0].clientX + touches[1].clientX) / 2;
+                lastTouchCenterY = (touches[0].clientY + touches[1].clientY) / 2;
+            }
+        }
+
+        function handleTouchMove(e) {
+            const touches = e.touches;
+            
+            if (isPinching && touches.length === 2) {
+                e.preventDefault();
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const scaleDelta = distance / lastTouchDistance;
+                
+                const newScale = Math.max(1, Math.min(4, scale * scaleDelta));
+                const scaleDiff = newScale - scale;
+                
+                const rect = document.getElementById('lightbox-image-container').getBoundingClientRect();
+                const imageRect = document.getElementById('lightbox-image').getBoundingClientRect();
+                
+                const relX = (lastTouchCenterX - rect.left - imageRect.width / 2 - translateX) / scale;
+                const relY = (lastTouchCenterY - rect.top - imageRect.height / 2 - translateY) / scale;
+                
+                translateX -= relX * scaleDiff;
+                translateY -= relY * scaleDiff;
+                
+                scale = newScale;
+                lastTouchDistance = distance;
+                
+                updateImageTransform();
+            } else if (isDragging && touches.length === 1 && scale > 1) {
+                e.preventDefault();
+                const deltaX = touches[0].clientX - lastTouchX;
+                const deltaY = touches[0].clientY - lastTouchY;
+                
+                translateX += deltaX;
+                translateY += deltaY;
+                
+                lastTouchX = touches[0].clientX;
+                lastTouchY = touches[0].clientY;
+                
+                updateImageTransform();
+            }
+        }
+
+        function handleTouchEnd() {
+            isDragging = false;
+            isPinching = false;
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            const newScale = Math.max(1, Math.min(4, scale + delta));
+            
+            const rect = document.getElementById('lightbox-image-container').getBoundingClientRect();
+            const imageRect = document.getElementById('lightbox-image').getBoundingClientRect();
+            
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const relX = (mouseX - imageRect.width / 2 - translateX) / scale;
+            const relY = (mouseY - imageRect.height / 2 - translateY) / scale;
+            
+            const scaleDiff = newScale - scale;
+            translateX -= relX * scaleDiff;
+            translateY -= relY * scaleDiff;
+            scale = newScale;
+            
+            updateImageTransform();
+        }
+
+        function toggleFullscreen() {
+            const lightbox = document.getElementById('lightbox');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                lightbox.requestFullscreen();
+            }
         }
 
         function selectDesign(id) {
@@ -627,6 +791,12 @@
             renderSteps();
             initLazyLoading();
             preloadKeyImages();
+            
+            const imageContainer = document.getElementById('lightbox-image-container');
+            imageContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+            imageContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+            imageContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+            imageContainer.addEventListener('wheel', handleWheel, { passive: false });
         };
     </script>
 </body>
