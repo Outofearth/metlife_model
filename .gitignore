@@ -1,0 +1,6 @@
+# 不需要提交的文件
+html-ppt-skill/
+*.pptx
+*.pyc
+__pycache__/
+Designs/
