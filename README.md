@@ -33,8 +33,7 @@ python -m http.server 8000
 ```
 ├── index.html          # 主页面
 ├── Designs/            # 设计方案图片
-├── metindex.html       # 原始项目页面
-└── Metdesign.html      # 设计方案页面
+└── README.md           # 项目说明
 ```
 
 ## GitHub Pages
