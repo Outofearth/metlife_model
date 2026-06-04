@@ -83,6 +83,38 @@
         }
         
         @media (max-width: 767px) {
+            .hero-section {
+                width: 100% !important;
+                max-width: 100% !important;
+                flex-shrink: 0;
+            }
+            .hero-content {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box;
+            }
+            .hero-title {
+                font-size: 28px !important;
+                line-height: 1.2 !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+            }
+            .hero-subtitle {
+                font-size: 16px !important;
+            }
+            .hero-desc {
+                font-size: 14px !important;
+                line-height: 1.6 !important;
+            }
+            .hero-btn {
+                font-size: 14px !important;
+                padding: 12px 24px !important;
+            }
+            .hero-badge {
+                font-size: 12px !important;
+                padding: 8px 16px !important;
+                gap: 8px !important;
+            }
             .assembly-container {
                 flex-direction: column !important;
             }
@@ -156,26 +188,26 @@
     </header>
 
     <!-- Hero -->
-    <section id="overview" class="relative bg-cover bg-center flex items-center" 
-             style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('Designs/Background_seasons.webp'); min-height: 55vh; height: min(60vh, 400px);">
-        <div class="max-w-7xl mx-auto px-6 relative z-10 text-white">
-            <div class="max-w-2xl">
-                <div class="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md px-6 py-2.5 rounded-3xl mb-8">
-                    <span class="text-amber-300">限量典藏版</span>
-                    <span class="w-px h-5 bg-white/40"></span>
-                    <span>客户忠诚回馈</span>
+    <section id="overview" class="hero-section relative bg-cover bg-center flex items-center overflow-hidden" 
+             style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('Designs/Background_seasons.webp'); min-height: 55vh; height: min(60vh, 400px); width: 100%; max-width: 100vw;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-white w-full">
+            <div class="hero-content max-w-2xl w-full">
+                <div class="hero-badge inline-flex items-center gap-3 bg-white/20 backdrop-blur-md px-4 sm:px-6 py-2 sm:py-2.5 rounded-3xl mb-4 sm:mb-8">
+                    <span class="text-amber-300 text-sm sm:text-base">限量典藏版</span>
+                    <span class="w-px h-4 bg-white/40"></span>
+                    <span class="text-sm sm:text-base">客户忠诚回馈</span>
                 </div>
                 
-                <h1 class="text-6xl font-bold leading-tight mb-6">常伴左右，<br>共驭美好未来</h1>
-                <p class="text-2xl opacity-90 mb-8">Navigating life together</p>
+                <h1 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-6">常伴左右，<br>共驭美好未来</h1>
+                <p class="hero-subtitle text-lg sm:text-xl opacity-90 mb-4 sm:mb-8">Navigating life together</p>
                 
-                <div class="text-lg opacity-80 mb-10">
-                    通过微型纽约地标建筑模型，我们为大都会人寿客户打造一个有温度、有故事、<br>可参与、可收藏的忠诚度回馈系统。
+                <div class="hero-desc text-sm sm:text-base opacity-80 mb-4 sm:mb-10 leading-relaxed">
+                    通过微型纽约地标建筑模型，我们为大都会人寿客户打造一个有温度、有故事、可参与、可收藏的忠诚度回馈系统。
                 </div>
                 
                 <div class="flex gap-4">
                     <button onclick="document.getElementById('assembly').scrollIntoView({ behavior: 'smooth' })" 
-                            class="bg-white text-blue-900 px-8 py-4 rounded-2xl font-semibold hover:bg-amber-400 transition-all">
+                            class="hero-btn bg-white text-blue-900 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold hover:bg-amber-400 transition-all whitespace-nowrap">
                         查看逐级拼装机制 →
                     </button>
                 </div>
