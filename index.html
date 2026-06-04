@@ -19,36 +19,41 @@
         .design-option { transition: all 0.4s ease; }
         .design-option:hover { transform: scale(1.03); }
         .selected { border: 3px solid #1e40af; background-color: #f0f9ff; }
+        
         .lightbox-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow: hidden; }
-        .lightbox-content { display: flex; flex-direction: column; height: 100%; padding: 60px 20px 20px; box-sizing: border-box; gap: 25px; }
-        .lightbox-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0; padding: 10px; }
-        .lightbox-title { color: white; font-size: 18px; margin-bottom: 15px; text-align: center; flex-shrink: 0; }
-        .lightbox-image-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; max-height: calc(100% - 40px); }
-        .lightbox-image { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 12px; object-fit: contain; }
-        .lightbox-close { position: absolute; top: 15px; right: 15px; color: white; font-size: 28px; cursor: pointer; z-index: 10; }
-        .lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 36px; cursor: pointer; z-index: 10; }
-        .lightbox-prev { left: 15px; }
-        .lightbox-next { right: 15px; }
-        .lightbox-preview { height: 25%; min-height: 100px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-        .image-grid { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.5) transparent; }
-        .image-grid::-webkit-scrollbar { height: 6px; }
+        .lightbox-content { display: flex; flex-direction: column; height: 100%; padding: 60px 15px 15px; box-sizing: border-box; gap: 15px; }
+        .lightbox-main { flex: 0 0 70%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; padding: 5px; }
+        .lightbox-title { color: white; font-size: 14px; margin-bottom: 10px; text-align: center; flex-shrink: 0; }
+        .lightbox-image-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; max-height: calc(100% - 30px); }
+        .lightbox-image { max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 8px; object-fit: contain; touch-action: manipulation; }
+        .lightbox-close { position: absolute; top: 12px; right: 12px; color: white; font-size: 24px; cursor: pointer; z-index: 10; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .lightbox-prev, .lightbox-next { position: absolute; top: 35%; transform: translateY(-50%); color: white; font-size: 28px; cursor: pointer; z-index: 10; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .lightbox-prev { left: 10px; }
+        .lightbox-next { right: 10px; }
+        .lightbox-preview { flex: 0 0 28%; min-height: 80px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+        .image-grid { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.5) transparent; }
+        .image-grid::-webkit-scrollbar { height: 4px; }
         .image-grid::-webkit-scrollbar-track { background: transparent; }
-        .image-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 3px; }
-        .image-thumbnail { flex-shrink: 0; width: 80px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.5; transition: all 0.3s; border: 2px solid transparent; }
+        .image-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 2px; }
+        .image-thumbnail { flex-shrink: 0; width: 60px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.5; transition: all 0.3s; border: 2px solid transparent; }
         .image-thumbnail:hover, .image-thumbnail.active { opacity: 1; border-color: #1e40af; }
         
         @media (min-width: 768px) {
-            .lightbox-close { top: 25px; right: 25px; font-size: 36px; }
-            .lightbox-prev, .lightbox-next { font-size: 48px; top: 42%; }
-            .lightbox-prev { left: 25px; }
-            .lightbox-next { right: 25px; }
-            .lightbox-title { font-size: 22px; }
-            .image-thumbnail { width: 100px; height: 75px; }
+            .lightbox-content { padding: 80px 30px 30px; gap: 25px; }
+            .lightbox-main { flex: 0 0 75%; min-height: 400px; padding: 15px; }
+            .lightbox-title { font-size: 20px; margin-bottom: 15px; }
+            .lightbox-close { top: 20px; right: 20px; font-size: 32px; width: 44px; height: 44px; }
+            .lightbox-prev, .lightbox-next { font-size: 40px; top: 38%; width: 50px; height: 50px; }
+            .lightbox-prev { left: 20px; }
+            .lightbox-next { right: 20px; }
+            .lightbox-preview { flex: 0 0 22%; min-height: 100px; }
+            .image-thumbnail { width: 80px; height: 60px; border-radius: 6px; }
         }
         
         @media (min-width: 1024px) {
-            .lightbox-title { font-size: 24px; }
-            .image-thumbnail { width: 120px; height: 90px; }
+            .lightbox-title { font-size: 22px; }
+            .image-thumbnail { width: 100px; height: 75px; }
+            .lightbox-prev, .lightbox-next { font-size: 48px; top: 40%; }
         }
         
         .lazy-image {
@@ -76,6 +81,56 @@
             animation: skeleton-loading 1.5s ease-in-out infinite;
             border-radius: inherit;
         }
+        
+        @media (max-width: 767px) {
+            .assembly-container {
+                flex-direction: column !important;
+            }
+            .assembly-steps {
+                width: 100% !important;
+                max-height: 35vh !important;
+                overflow-y: auto !important;
+                margin-bottom: 15px !important;
+            }
+            .assembly-image {
+                width: 100% !important;
+            }
+            .progress-step {
+                padding: 8px 12px !important;
+            }
+            .progress-step .w-14 {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 14px !important;
+            }
+            .progress-step div:last-child {
+                flex: 1;
+            }
+            .progress-step .font-semibold {
+                font-size: 14px !important;
+            }
+            .progress-step .text-gray-500 {
+                font-size: 12px !important;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .assembly-steps {
+                width: 30% !important;
+            }
+            .assembly-image {
+                width: 68% !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .assembly-steps {
+                width: 40% !important;
+            }
+            .assembly-image {
+                width: 58% !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -101,8 +156,8 @@
     </header>
 
     <!-- Hero -->
-    <section id="overview" class="relative h-[75vh] bg-cover bg-center flex items-center" 
-             style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('Designs/Background_seasons.webp')">
+    <section id="overview" class="relative bg-cover bg-center flex items-center" 
+             style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('Designs/Background_seasons.webp'); min-height: 55vh; height: min(60vh, 400px);">
         <div class="max-w-7xl mx-auto px-6 relative z-10 text-white">
             <div class="max-w-2xl">
                 <div class="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md px-6 py-2.5 rounded-3xl mb-8">
@@ -188,17 +243,17 @@
         <h2 class="text-4xl font-bold text-center mb-4">逐级升级 · 拼筑财富之城</h2>
         <p class="text-center text-gray-600 mb-12">客户每购买/续保一款产品，即可获得对应地标部件，最终完成完整模型</p>
         
-        <div class="flex flex-col lg:flex-row gap-12 items-center">
-            <div class="lg:w-5/12">
-                <div class="space-y-8" id="steps-container">
+        <div class="flex flex-col lg:flex-row gap-8 items-start assembly-container">
+            <div class="lg:w-5/12 assembly-steps">
+                <div class="space-y-4" id="steps-container">
                     <!-- Populated by JS -->
                 </div>
             </div>
             
-            <div class="lg:w-7/12">
+            <div class="lg:w-7/12 assembly-image">
                 <img id="main-assembly-image" src="Designs/1-基础底板.jpg" 
-                     class="rounded-3xl shadow-2xl w-full" alt="完整模型效果图">
-                <p class="text-center text-sm text-gray-500 mt-6">点击左侧步骤可切换展示效果</p>
+                     class="rounded-3xl shadow-2xl w-full max-h-[60vh] object-contain" alt="完整模型效果图">
+                <p class="text-center text-sm text-gray-500 mt-4">点击左侧步骤可切换展示效果</p>
             </div>
         </div>
     </section>
