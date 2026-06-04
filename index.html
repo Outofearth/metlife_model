@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1e40af">
     <title>大都会人寿财富地图 · 客户回馈模型项目</title>
+    <link rel="preload" href="https://media.githubusercontent.com/media/Outofearth/metlife_model/main/Designs/Background_seasons.png" as="image">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -48,6 +49,32 @@
         @media (min-width: 1024px) {
             .lightbox-title { font-size: 24px; }
             .image-thumbnail { width: 120px; height: 90px; }
+        }
+        
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+        }
+        
+        .lazy-image.loaded {
+            opacity: 1;
+            background: none;
+            animation: none;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .image-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+            border-radius: inherit;
         }
     </style>
 </head>
@@ -272,7 +299,7 @@
             const container = document.getElementById('design-grid');
             container.innerHTML = designs.map(d => `
                 <div class="design-option bg-white border-2 border-transparent rounded-3xl overflow-hidden shadow-xl cursor-pointer" onclick="openLightbox(${d.id - 1})">
-                    <img src="${d.mainImg}" class="w-full h-64 object-cover">
+                    <div class="w-full h-64 image-skeleton"><img data-src="${d.mainImg}" class="w-full h-64 object-cover lazy-image"></div>
                     <div class="p-8">
                         <h3 class="text-2xl font-bold mb-1">${d.title}</h3>
                         <p class="text-blue-600 font-medium">${d.style}</p>
@@ -402,7 +429,7 @@
             const container = document.getElementById('landmark-grid');
             container.innerHTML = landmarks.map(l => `
                 <div class="model-card bg-white rounded-3xl overflow-hidden shadow">
-                    <img src="${l.img}" class="w-full h-56 object-cover">
+                    <div class="w-full h-56 image-skeleton"><img data-src="${l.img}" class="w-full h-56 object-cover lazy-image"></div>
                     <div class="p-7">
                         <h3 class="font-bold text-2xl mb-1">${l.name}</h3>
                         <p class="text-amber-600 font-medium text-sm mb-3">${l.product}</p>
@@ -468,10 +495,53 @@
             element.classList.add('nav-active');
         }
 
+        function initLazyLoading() {
+            const lazyImages = document.querySelectorAll('.lazy-image');
+            
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.dataset.src;
+                        if (src) {
+                            img.src = src;
+                            img.onload = () => {
+                                img.classList.add('loaded');
+                            };
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px',
+                threshold: 0.01
+            });
+
+            lazyImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        function preloadKeyImages() {
+            const keyImages = [
+                "https://media.githubusercontent.com/media/Outofearth/metlife_model/main/Designs/Background_seasons.png",
+                "https://media.githubusercontent.com/media/Outofearth/metlife_model/main/Designs/A1.png",
+                "https://media.githubusercontent.com/media/Outofearth/metlife_model/main/Designs/B1.png",
+                "https://media.githubusercontent.com/media/Outofearth/metlife_model/main/Designs/C1.png"
+            ];
+            
+            keyImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
         window.onload = () => {
             renderDesigns();
             renderLandmarks();
             renderSteps();
+            initLazyLoading();
+            preloadKeyImages();
         };
     </script>
 </body>
